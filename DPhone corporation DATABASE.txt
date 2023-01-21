@@ -1,0 +1,225 @@
+DPhone corporation is telecommunications industry wants to develop software for there new upcoming phone. They came to your company. You as team member have responsibility to develop this standalone application. They having following requirements.
+1.User can register and login
+2. User can give referral for phone from their family or friends.
+3. If user referral buy mobile the user will get 1000 bonus points. 1point is equal to 1Rs.
+
+4. User can view referral, edit referral, delete referral. 
+
+In this you as team member have to design database. 
+
+Create following tables
+User(userId,first name,last name, address, mobile, email, username, password)
+
+Referral( referalId, referral First name, referral last name, mobile, email, userId(fk), date of referral, referral points, status)
+
+Customer(custermerId, first name, last name, email, mobile)
+
+BuyingDetails( custermerId(fk),userId,purchase date, productName)
+
+Insert 5 records in each table and write Sqlqueries for following operations.
+
+1. Display total number of referral done by particular user by userId.
+
+2. Display total number of points earned by user 
+
+3. Display name and mobile of user whose referral customer have purchased item on 21/09/2022 
+
+4.Display details of customer who purchased “iPhone 14”
+
+5.delete all record of customer including purchase details Those have purchased iPhone 14.
+
+15. Write userview to display only first name, last name, mobile and email. And 
+
+Perform following queries on view
+-Display record by email
+-Display record by mobile
+
+
+
+
+---------SOLUTION---------
+
+***Creating and connecting to database
+
+postgres=# CREATE DATABASE DPhone;
+CREATE DATABASE
+postgres=# \c dphone
+You are now connected to database "dphone" as user "postgres".
+
+***Creating tables
+
+dphone=# CREATE TABLE User1(
+dphone(# userid INT PRIMARY KEY,
+dphone(# first_name TEXT,
+dphone(# last_name TEXT,
+dphone(# address TEXT NOT NULL,
+dphone(# mobile INT NOT NULL,
+dphone(# email TEXT,
+dphone(# username TEXT NOT NULL,
+dphone(# password TEXT NOT NULL
+dphone(# );
+CREATE TABLE
+
+dphone=# CREATE TABLE Referral(
+dphone(# referalID INT PRIMARY KEY,
+dphone(# First_name TEXT,
+dphone(# referral_last_name TEXT,
+dphone(# mobile INT NOT NULL,
+dphone(# email TEXT NOT NULL,
+dphone(# userId INT,
+dphone(# date_of_referral DATE,
+dphone(# referral_points INT,
+dphone(# status TEXT,
+dphone(# FOREIGN KEY(userid) REFERENCES User1(userid));
+CREATE TABLE
+
+dphone=# CREATE TABLE Customer(
+dphone(# customerID INT PRIMARY KEY,
+dphone(# First_name TEXT,
+dphone(# Last_name TEXT,
+dphone(# email TEXT NOT NULL,
+dphone(# mobile INT NOT NULL
+dphone(# );
+CREATE TABLE
+
+dphone=# CREATE TABLE BuyingDetails(
+dphone(# customerID INT,
+dphone(# userid INT,
+dphone(# purchase_date DATE,
+dphone(# product_name TEXT NOT NULL,
+dphone(# FOREIGN KEY(customerID) REFERENCES Customer(customerID),
+dphone(# FOREIGN KEY(userid) REFERENCES User1(userid)
+dphone(# );
+CREATE TABLE
+
+***Inserting values into tables
+
+dphone=# INSERT INTO User1 VALUES
+dphone-# (1,'rahul','varma','Andra Pradesh', 63009, 'rahul@gmail.com', 'rahulvarma','rahulpwd'),
+dphone-# (2,'sameer','shaik','Mumbai', 78963, 'sameer@gmail.com', 'sameershaik','sameerpwd'),
+dphone-# (3,'hara','teja','Banglore',89652, 'harateja@gmail.com', 'harateja', 'haratejapwd'),
+dphone-# (4,'uttej','sai','Kerala',99656, 'uttejsai@gmail.com', 'uttejsai', 'uttejpwd'),
+dphone-# (5,'Vikyanth','Ms','TamilNadu',79626, 'vikyanth@gmail.com', 'vikyanth', 'vikyanthpwd');
+INSERT 0 5
+
+dphone=# INSERT INTO Referral VALUES
+dphone-# (101, 'ankit', 'lal', 45621, 'ankitlal@gmail.com', 1, '2022-09-21',1000,'done'),
+dphone-# (102, 'suman', 'singh', 99221, 'sumansingh@gmail.com', 1, '2022-05-23',1000,'pending'),
+dphone-# (103, 'sachin', 'ten', 65251, 'sachin@gmail.com', 3, '2022-09-21',1000,'pending'),
+dphone-# (104, 'DHONI', 'MS', 83261, 'dhoni@gmail.com', 4, '2022-02-17',1000,'done'),
+dphone-# (105, 'Virat', 'Kohli', 93564, 'kohli@gmail.com', 5, '2022-07-05',1000,'done');
+INSERT 0 5
+
+dphone=# INSERT INTO Customer VALUES
+dphone-# (1001, 'Virat', 'Kohli', 'kohli@gmail.com', 93564),
+dphone-# (1002, 'DHONI', 'MS', 'dhoni@gmail.com', 83261),
+dphone-# (1003, 'ankit', 'lal', 'ankitlal@gmail.com', 45621),
+dphone-# (1004, 'rick', 'roll', 'rick@gmail.com', 84856),
+dphone-# (1005, 'odin', 'rock', 'odin@gmail.com', 56485);
+INSERT 0 5
+
+dphone=# INSERT INTO BuyingDetails VALUES
+dphone-# (1001,5,'2022-09-21','Iphone 14'),
+dphone-# (1002,4,'2022-09-21','Iphone 14 pro'),
+dphone-# (1003,1,'2022-07-04','Iphone 14'),
+dphone-# (1004,1,'2022-11-05','Television'),
+dphone-# (1005,3,'2022-04-18','AC');
+
+***Queries
+
+1.Display total number of referral done by particular user by userId.
+
+dphone=# SELECT U.userid, U.first_name, U.last_name, COUNT(R.userid)  FROM User1 U INNER JOIN Referral R ON U.userid=R.userid  GROUP BY u.userID;
+ userid | first_name | last_name | count
+--------+------------+-----------+-------
+      5 | Vikyanth   | Ms        |     1
+      4 | uttej      | sai       |     1
+      1 | rahul      | varma     |     2
+      3 | hara       | teja      |     1
+(4 rows)
+
+2.Display total number of points earned by user
+
+dphone=# SELECT U.userid, U.first_name, U.last_name, SUM(referral_points )  FROM User1 U INNER JOIN Referral R ON U.userid=R.userid  GROUP BY u.userID;
+ userid | first_name | last_name | sum
+--------+------------+-----------+------
+      5 | Vikyanth   | Ms        | 1000
+      4 | uttej      | sai       | 1000
+      1 | rahul      | varma     | 2000
+      3 | hara       | teja      | 1000
+(4 rows)
+
+3.Display name and mobile of user whose referral customer have purchased item on 21/09/2022
+
+dphone=# SELECT first_name,last_name, mobile FROM User1 WHERE userid IN (SELECT userid FROM BuyingDetails WHERE purchase_date='2022-09-21');
+
+ first_name | last_name | mobile
+------------+-----------+--------
+ uttej      | sai       |  99656
+ Vikyanth   | Ms        |  79626
+(2 rows) 
+
+4.Display details of customer who purchased “iPhone 14”
+
+dphone=# SELECT * FROM Customer C INNER JOIN BuyingDetails B ON C.customerID =B.customerID WHERE product_name='Iphone 14';
+
+ customerid | first_name | last_name |       email        | mobile | customerid | userid | purchase_date | product_name
+------------+------------+-----------+--------------------+--------+------------+--------+---------------+--------------
+       1001 | Virat      | Kohli     | kohli@gmail.com    |  93564 |       1001 |      5 | 2022-09-21    | Iphone 14
+       1003 | ankit      | lal       | ankitlal@gmail.com |  45621 |       1003 |      1 | 2022-07-04    | Iphone 14
+(2 rows)
+
+5.delete all record of customer including purchase details Those have purchased iPhone 14.
+
+dphone=# SELECT * FROM Customer;
+ customerid | first_name | last_name |       email        | mobile
+------------+------------+-----------+--------------------+--------
+       1001 | Virat      | Kohli     | kohli@gmail.com    |  93564
+       1002 | DHONI      | MS        | dhoni@gmail.com    |  83261
+       1003 | ankit      | lal       | ankitlal@gmail.com |  45621
+       1004 | rick       | roll      | rick@gmail.com     |  84856
+       1005 | odin       | rock      | odin@gmail.com     |  56485
+(5 rows)
+
+??????????????????
+dphone=# DELETE Customer,BuyingDetails FROM Customer C INNER JOIN BuyingDetails B ON C.customerID=B.customerID WHERE product_name='Iphone 14';
+ERROR:  syntax error at or near "Customer"
+
+15. Write userview to display only first name, last name, mobile and email. And 
+
+Perform following queries on view
+-Display record by email
+-Display record by mobile
+
+dphone=# CREATE VIEW userview AS SELECT first_name, last_name, mobile, email FROM User1;
+CREATE VIEW
+dphone=# SELECT * FROM userview;
+ first_name | last_name | mobile |       email
+------------+-----------+--------+--------------------
+ rahul      | varma     |  63009 | rahul@gmail.com
+ sameer     | shaik     |  78963 | sameer@gmail.com
+ hara       | teja      |  89652 | harateja@gmail.com
+ uttej      | sai       |  99656 | uttejsai@gmail.com
+ Vikyanth   | Ms        |  79626 | vikyanth@gmail.com
+(5 rows)
+
+
+dphone=# SELECT * FROM userview WHERE email='rahul@gmail.com' OR email='sameer@gmail.com';
+ first_name | last_name | mobile |      email
+------------+-----------+--------+------------------
+ rahul      | varma     |  63009 | rahul@gmail.com
+ sameer     | shaik     |  78963 | sameer@gmail.com
+(2 rows)
+
+
+dphone=# SELECT * FROM userview WHERE mobile IN (63009, 89652,79626);
+ first_name | last_name | mobile |       email
+------------+-----------+--------+--------------------
+ rahul      | varma     |  63009 | rahul@gmail.com
+ hara       | teja      |  89652 | harateja@gmail.com
+ Vikyanth   | Ms        |  79626 | vikyanth@gmail.com
+(3 rows)
+
+
+
+
