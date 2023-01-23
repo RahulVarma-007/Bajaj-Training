@@ -87,8 +87,8 @@ dphone(# customerID INT,
 dphone(# userid INT,
 dphone(# purchase_date DATE,
 dphone(# product_name TEXT NOT NULL,
-dphone(# FOREIGN KEY(customerID) REFERENCES Customer(customerID),
-dphone(# FOREIGN KEY(userid) REFERENCES User1(userid)
+dphone(# CONSTRAINT fkey FOREIGN KEY(customerID) REFERENCES Customer(customerID) ON DELETE CASCADE,
+dphone(# CONSTRAINT fkey2 FOREIGN KEY(userid) REFERENCES User1(userid)
 dphone(# );
 CREATE TABLE
 
